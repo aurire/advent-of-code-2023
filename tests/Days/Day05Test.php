@@ -13,15 +13,15 @@ class Day05Test extends TestCase
     {
         $day = new Day05();
 
-        $this->assertEquals(111, $day->part1('test.txt'));
-        //$this->assertEquals(222, $day->part1('real.txt'));
+        $this->assertEquals(35, $day->part1('test.txt'));
+        $this->assertEquals(51752125, $day->part1('real.txt'));
     }
 
     public function testPart2(): void
     {
         $day = new Day05();
 
-        $this->assertEquals(1000, $day->part2('test.txt'));
-        $this->assertEquals(10000, $day->part2('real.txt'));
+        $this->assertEquals(46, $day->part2('test.txt'));
+        $this->assertEquals(46, $day->part2('real.txt'));
     }
 }

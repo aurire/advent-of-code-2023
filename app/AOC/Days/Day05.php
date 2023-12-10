@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AOC\Days;
 
+use AOC\DataStruct\Entities\SeedInfo;
+use AOC\DataStruct\Range\RangeMap;
 use AOC\DayBase;
 
 class Day05 extends DayBase
@@ -12,17 +14,53 @@ class Day05 extends DayBase
     {
         $seedsAndMaps = $this->parse($testCase);
         $seeds = $seedsAndMaps['seeds'];
-        $maps = $seedsAndMaps['maps'];
+        $ranges = $this->getRanges($seedsAndMaps['maps']);
 
+        $seedInfos = [];
+        foreach ($seeds as $seed) {
+            $seedInfo = $this->getSeedInfo($seed, $ranges);
+            $seedInfos[] = $seedInfo;
+        }
 
-        return 1;
+        $lowestLocation = PHP_INT_MAX;
+
+        foreach ($seedInfos as $seedInfo) {
+            if ($seedInfo->getLocation() < $lowestLocation) {
+                $lowestLocation = $seedInfo->getLocation();
+            }
+        }
+
+        return $lowestLocation;
     }
 
     public function part2(string $testCase): int
     {
-        $games = $this->getLines($testCase);
+        $seedsAndMaps = $this->parse($testCase);
+        $seeds = $seedsAndMaps['seeds'];
+        $ranges = $this->getRanges($seedsAndMaps['maps']);
 
-        return array_sum($games);
+        $first = true;
+        $frm = 0;
+        $lowestLocation = PHP_INT_MAX;
+        foreach ($seeds as $seed) {
+            if ($first) {
+                $frm = $seed;
+                $first = false;
+            } else {
+                $upTo = $frm + $seed;
+                for ($i = $frm; $i <= $upTo; $i++) {
+                    $seedInfo = $this->getSeedInfo($i, $ranges);
+                    $loc = $seedInfo->getLocation();
+                    if ($loc < $lowestLocation) {
+                        $lowestLocation = $loc;
+                    }
+                }
+
+                $first = true;
+            }
+        }
+
+        return $lowestLocation;
     }
 
     public function parse(string $testCase): array
@@ -56,5 +94,34 @@ class Day05 extends DayBase
     private function getLines(string $fileName): array
     {
         return $this->getDayLines(__FILE__, $fileName, false);
+    }
+
+    private function getRanges(array $maps): array
+    {
+        $ranges = [];
+        foreach ($maps as $mapName => $map) {
+            $mapRange = new RangeMap();
+            $ranges[$mapName] = $mapRange;
+            foreach ($map as $item) {
+                $ranges[$mapName]->addRange($item[0], $item[1], $item[2]);
+            }
+        }
+
+        return $ranges;
+    }
+
+    private function getSeedInfo(int $seed, array $ranges): SeedInfo
+    {
+        $seedInfo = new SeedInfo($seed);
+        $seedInfo->setSoil($ranges['seed-to-soil']->getDestinationBySource($seed));
+        $seedInfo->setFertilizer($ranges['soil-to-fertilizer']->getDestinationBySource($seedInfo->getSoil()));
+        $seedInfo->setWater($ranges['fertilizer-to-water']->getDestinationBySource($seedInfo->getFertilizer()));
+        $seedInfo->setLight($ranges['water-to-light']->getDestinationBySource($seedInfo->getWater()));
+        $seedInfo->setTemperature($ranges['light-to-temperature']->getDestinationBySource($seedInfo->getLight()));
+        $seedInfo->setHumidity($ranges['temperature-to-humidity']
+            ->getDestinationBySource($seedInfo->getTemperature()));
+        $seedInfo->setLocation($ranges['humidity-to-location']->getDestinationBySource($seedInfo->getHumidity()));
+
+        return $seedInfo;
     }
 }
