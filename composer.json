@@ -1,0 +1,23 @@
+{
+    "name": "aurimasrekstys/aoc2023",
+    "description": "Advent of Code 2023",
+    "type": "project",
+    "require": {
+        "php": "^8.2",
+        "phpunit/phpunit": "^10.5"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "AOC\\": "app/AOC/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Aurimas Rekstys",
+            "email": "aurimas.rekstys@hostinger.com"
+        }
+    ]
+}
