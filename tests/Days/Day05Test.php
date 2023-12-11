@@ -22,6 +22,6 @@ class Day05Test extends TestCase
         $day = new Day05();
 
         $this->assertEquals(46, $day->part2('test.txt'));
-        $this->assertEquals(46, $day->part2('real.txt'));
+        $this->assertEquals(12634632, $day->part2('real.txt'));
     }
 }

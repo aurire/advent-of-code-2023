@@ -30,4 +30,64 @@ class RangeMapTest extends TestCase
         $this->assertEquals(1160, $rangeMap->getDestinationBySource(260));
         $this->assertEquals(261, $rangeMap->getDestinationBySource(261));
     }
+
+    public function testGetDestinationRangesBySourceRange(): void
+    {
+        $rangeMap = new RangeMap();
+        $rangeMap->addRange(102, 2, 4);
+        $rangeMap->addRange(109, 9, 6);
+        $rangeMap->addRange(118, 18, 4);
+
+        $result = $rangeMap->getDestinationRangesBySourceRange(3, 12);
+
+        $this->assertEquals(103, $result[0][0]);
+        $this->assertEquals(105, $result[0][1]);
+        $this->assertEquals(6, $result[1][0]);
+        $this->assertEquals(8, $result[1][1]);
+        $this->assertEquals(109, $result[2][0]);
+        $this->assertEquals(112, $result[2][1]);
+
+        $result = $rangeMap->getDestinationRangesBySourceRange(1, 100);
+
+        $this->assertEquals(1, $result[0][0]);
+        $this->assertEquals(1, $result[0][1]);
+        $this->assertEquals(102, $result[1][0]);
+        $this->assertEquals(105, $result[1][1]);
+        $this->assertEquals(6, $result[2][0]);
+        $this->assertEquals(8, $result[2][1]);
+        $this->assertEquals(109, $result[3][0]);
+        $this->assertEquals(114, $result[3][1]);
+        $this->assertEquals(15, $result[4][0]);
+        $this->assertEquals(17, $result[4][1]);
+        $this->assertEquals(118, $result[5][0]);
+        $this->assertEquals(121, $result[5][1]);
+        $this->assertEquals(22, $result[6][0]);
+        $this->assertEquals(100, $result[6][1]);
+
+        $result = $rangeMap->getDestinationRangesBySourceRange(0, 3);
+
+        $this->assertEquals(0, $result[0][0]);
+        $this->assertEquals(1, $result[0][1]);
+        $this->assertEquals(102, $result[1][0]);
+        $this->assertEquals(103, $result[1][1]);
+    }
+
+    public function testGetDestinationRangesBySourceRanges(): void
+    {
+        $rangeMap = new RangeMap();
+        $rangeMap->addRange(102, 2, 4);
+        $rangeMap->addRange(109, 9, 6);
+        $rangeMap->addRange(118, 18, 4);
+
+        $result = $rangeMap->getDestinationRangesBySourceRanges([[3, 7], [20, 23]]);
+
+        $this->assertEquals(103, $result[0][0]);
+        $this->assertEquals(105, $result[0][1]);
+        $this->assertEquals(6, $result[1][0]);
+        $this->assertEquals(7, $result[1][1]);
+        $this->assertEquals(120, $result[2][0]);
+        $this->assertEquals(121, $result[2][1]);
+        $this->assertEquals(22, $result[3][0]);
+        $this->assertEquals(23, $result[3][1]);
+    }
 }

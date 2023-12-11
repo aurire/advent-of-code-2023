@@ -40,20 +40,29 @@ class Day05 extends DayBase
         $ranges = $this->getRanges($seedsAndMaps['maps']);
 
         $first = true;
-        $frm = 0;
+        $from = 0;
         $lowestLocation = PHP_INT_MAX;
         foreach ($seeds as $seed) {
             if ($first) {
-                $frm = $seed;
+                $from = $seed;
                 $first = false;
             } else {
-                $upTo = $frm + $seed;
-                for ($i = $frm; $i <= $upTo; $i++) {
-                    $seedInfo = $this->getSeedInfo($i, $ranges);
-                    $loc = $seedInfo->getLocation();
-                    if ($loc < $lowestLocation) {
-                        $lowestLocation = $loc;
-                    }
+                $upTo = $from + $seed - 1;
+
+                $soilRanges = $ranges['seed-to-soil']->getDestinationRangesBySourceRange($from, $upTo);
+                $fertilizerRanges = $ranges['soil-to-fertilizer']->getDestinationRangesBySourceRanges($soilRanges);
+                $waterRanges = $ranges['fertilizer-to-water']->getDestinationRangesBySourceRanges($fertilizerRanges);
+                $lightRanges = $ranges['water-to-light']->getDestinationRangesBySourceRanges($waterRanges);
+                $temperatureRanges = $ranges['light-to-temperature']->getDestinationRangesBySourceRanges($lightRanges);
+                $humidityRanges = $ranges['temperature-to-humidity']->getDestinationRangesBySourceRanges(
+                    $temperatureRanges
+                );
+                $locationRanges = $ranges['humidity-to-location']->getDestinationRangesBySourceRanges($humidityRanges);
+
+                $lowestInRanges = $this->getLowestInRanges($locationRanges);
+
+                if ($lowestInRanges < $lowestLocation) {
+                    $lowestLocation = $lowestInRanges;
                 }
 
                 $first = true;
@@ -123,5 +132,17 @@ class Day05 extends DayBase
         $seedInfo->setLocation($ranges['humidity-to-location']->getDestinationBySource($seedInfo->getHumidity()));
 
         return $seedInfo;
+    }
+
+    private function getLowestInRanges(array $locationRanges): int
+    {
+        $lowest = PHP_INT_MAX;
+        foreach ($locationRanges as $locationRange) {
+            if ($locationRange[0] < $lowest) {
+                $lowest = $locationRange[0];
+            }
+        }
+
+        return $lowest;
     }
 }
