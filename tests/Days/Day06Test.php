@@ -13,7 +13,7 @@ class Day06Test extends TestCase
     {
         $day = new Day06();
 
-        $this->assertEquals(111, $day->part1('test.txt'));
+        $this->assertEquals(288, $day->part1('test.txt'));
         $this->assertEquals(222, $day->part1('real.txt'));
     }
 
@@ -21,7 +21,7 @@ class Day06Test extends TestCase
     {
         $day = new Day06();
 
-        $this->assertEquals(1000, $day->part2('test.txt'));
-        $this->assertEquals(10000, $day->part2('real.txt'));
+        $this->assertEquals(71503, $day->part2('test.txt'));
+        $this->assertEquals(45647654, $day->part2('real.txt'));
     }
 }
